@@ -27,10 +27,22 @@ class SampleListener(Leap.Listener):
     def on_frame(self, controller):
         # Get the most recent frame and report some basic information
         frame = controller.frame()
-
+        hand = frame.hands[0]
         # If there's a hand write out formatted palm positions to screen.
         if not frame.hands.is_empty:
-            print frame.hands[0].palm_position #.replace(',','')[1:-1]
+            # Get the hand's normal vector and direction
+            yaw = hand.palm_normal.roll if hand.is_left else -1.*hand.palm_normal.roll
+            vol = (yaw * Leap.RAD_TO_DEG +90 )/1.8
+            if vol > 100:
+                vol = 100
+            if vol < 0:
+                vol = 0
+
+            # Calculate the hand's pitch, roll, and yaw angles
+            print "%f\t%f" % (
+                frame.hands[0].palm_position[1],
+                vol
+                )
 
 def main():
     # Create a sample listener and controller
