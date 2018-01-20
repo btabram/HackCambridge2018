@@ -15,12 +15,14 @@ results in lag: currently trying to fix.
 import pyaudio
 import struct
 import math
+import sys
+import select
 
 frequency = 1040.0  # hertz
 rFreq = 760.00  # A
 lFreq = 523.25  # C
 
-sampleRate = 2000  # hertz
+sampleRate = 10000  # hertz
 print(sampleRate)
 p = pyaudio.PyAudio()
 
@@ -32,27 +34,23 @@ stream = p.open(
     output=True)
 
 i = 0
+
+x, y, z = 0, 0, 0
 while True:
-    try:
-        palmPosition = input().strip()
-    except EOFError:
-        break
-    if not palmPosition:
-        continue
-    palmPosition = palmPosition.strip("()")
-    try:
-        x, y, z = [5 * float(x) for x in palmPosition.split(",")]
-        for j in range(35):
-            i += 1
-            l = int(
-                32767.0 * math.cos(y * math.pi * float(i) / float(sampleRate)))
-            r = int(
-                32767.0 * math.cos(y * math.pi * float(i) / float(sampleRate)))
-            data = struct.pack('<hh', l, r)
-            stream.write(data)
-    except ValueError:
-        continue
-    print(x, y, z)
+    if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+        line = sys.stdin.readline()
+        palmPosition = line.strip().strip("()")
+        try:
+            x, y, z = [5 * float(x) for x in palmPosition.split(",")]
+            print(x, y, z)
+
+        except ValueError:
+            continue
+    i += 1
+    l = int(32767.0 * math.cos(y * math.pi * float(i) / float(sampleRate)))
+    r = int(32767.0 * math.cos(y * math.pi * float(i) / float(sampleRate)))
+    data = struct.pack('<hh', l, r)
+    stream.write(data)
 
 stream.stop_stream()
 stream.close()
