@@ -1,4 +1,8 @@
-import sys, thread, time
+import sys, thread, time, os
+
+sys.path.append('LeapSDK/lib/x64')
+import LeapPython
+sys.path.append('LeapSDK/lib')
 import Leap
 
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
@@ -25,7 +29,7 @@ class SampleListener(Leap.Listener):
 
         # If there's a hand write out formatted palm positions to screen.
         if not frame.hands.is_empty:
-            print frame.hands[0].palm_position.replace(',','')[1:-1]
+            print frame.hands[0].palm_position #.replace(',','')[1:-1]
 
 def main():
     # Create a sample listener and controller
