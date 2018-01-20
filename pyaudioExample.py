@@ -12,7 +12,6 @@ rFreq = 1760.00  # A
 lFreq =  523.25  # C
 
 
-wf = wave.open(sys.argv[1], 'rb')
 
 sampleRate = 44100 # hertz
 print(sampleRate)
@@ -22,7 +21,7 @@ p = pyaudio.PyAudio()
 # open stream (2)
 stream = p.open(format=p.get_format_from_width(2),
                 channels=2,
-                rate=wf.getframerate(),
+                rate=sampleRate,
                 output=True)
 
 # read data
