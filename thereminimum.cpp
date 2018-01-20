@@ -53,53 +53,18 @@ void SampleListener::onFrame(const Controller& controller) {
             << ", gestures: " << frame.gestures().count() << std::endl;
   */
   HandList hands = frame.hands();
-  for (HandList::const_iterator hl = hands.begin(); hl != hands.end(); ++hl) {
-    // Get the first hand
-    const Hand hand = *hl;
-    std::cout << std::string(2, ' ') << hand.palmPosition() << std::endl;
-  }
 
-  if (!frame.hands().isEmpty()) {
-    std::cout << std::endl;
+  if (!frame.hands().isEmpty()){
+    std::cout << hands[0].palmPosition() << std::endl;
   }
 
 }
 int main(int argc, char** argv) {
 
-  // Keep this process running until Enter is pressed
-  std::cout << "Press Enter to quit..." << std::endl;
-  std::cin.get();
-
   Controller controller;
   SampleListener listener;
 
-  const Frame frame = controller.frame();
-
   controller.addListener(listener);
-  HandList hands = frame.hands();
-   for (HandList::const_iterator hl = hands.begin(); hl != hands.end(); ++hl) {
-    // Get the first hand
-    const Hand hand = *hl;
-    std::string handType = hand.isLeft() ? "Left hand" : "Right hand";
-    std::cout << std::string(2, ' ') << handType << ", id: " << hand.id()
-              << ", palm position: " << hand.palmPosition() << std::endl;
-    // Get the hand's normal vector and direction
-    const Vector normal = hand.palmNormal();
-    const Vector direction = hand.direction();
-
-     std::cout << std::string(2, ' ') << "Palm normal" << normal << std::endl;
-    // Get fingers
-    const FingerList fingers = hand.fingers();
-    for (FingerList::const_iterator fl = fingers.begin(); fl != fingers.end(); ++fl) {
-      const Finger finger = *fl;
-      std::cout << std::string(4, ' ') <<  fingerNames[finger.type()]
-                << " finger, id: " << finger.id()
-                << ", length: " << finger.length()
-                << "mm, width: " << finger.width() << std::endl;
-    }
-  }
-
-
 
   if (argc > 1 && strcmp(argv[1], "--bg") == 0)
     controller.setPolicy(Leap::Controller::POLICY_BACKGROUND_FRAMES);
