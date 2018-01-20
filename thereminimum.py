@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """thereminimum.py
 
 Written on 20/01 by Will Grant, Tomé Gouveia and Brett Abram
