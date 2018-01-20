@@ -21,7 +21,7 @@ import Queue
 
 
 class LeapData:
-    def __innit__(self, pitch, vol):
+    def __init__(self, pitch, vol):
         self.pitch = pitch
         self.vol = vol
 

@@ -63,9 +63,6 @@ def main():
     listener = SampleListener()
     controller = Leap.Controller()
 
-    # Have the sample listener receive events from the controller
-    controller.add_listener(listener)
-
 
 
     # start thread
@@ -74,6 +71,9 @@ def main():
     t.daemon = True
     t.start()
 
+
+    # Have the sample listener receive events from the controller
+    controller.add_listener(listener)
 
 
     # Keep this process running until Enter is pressed
