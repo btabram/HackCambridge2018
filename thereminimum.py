@@ -1,3 +1,13 @@
+"""thereminimum.py
+
+Written on 20/01 by Will Grant, Tomé Gouveia and Brett Abram
+
+Takes input from Leap motion and writes it out to stdout.
+
+It writes out the palm position coordinates as:
+(x, y, z)
+"""
+
 import sys, thread, time, os
 
 if sys.platform == 'linux2':
