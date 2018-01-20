@@ -1,7 +1,8 @@
 import sys, thread, time, os
 
-sys.path.append('LeapSDK/lib/x64')
-import LeapPython
+if sys.platform == 'linux2':
+    sys.path.append('LeapSDK/lib/x64')
+    import LeapPython
 sys.path.append('LeapSDK/lib')
 import Leap
 
