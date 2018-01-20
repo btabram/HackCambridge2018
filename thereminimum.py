@@ -9,7 +9,7 @@ It writes out the palm position coordinates as:
 (x, y, z)
 """
 
-import sys, thread, time, os
+import sys, thread, time, os, pyaudio, threading, Queue
 
 if sys.platform == 'linux2':
     sys.path.append('LeapSDK/lib/x64')
@@ -19,12 +19,7 @@ import Leap
 
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
-
-
-import threading
-import Queue
-
-
+import palmPositionToSound as ppts
 
 
 class SampleListener(Leap.Listener):
@@ -56,19 +51,9 @@ class SampleListener(Leap.Listener):
             if vol < 0:
                 vol = 0
 
-            # Calculate the hand's pitch, roll, and yaw angles
-            print "%f\t%f" % (
-                frame.hands[0].palm_position[1],
-                vol
-                )
+            pitch = frame.hands[0].palm_position[1]
 
-def work():
-    while True:
-        try:
-            print q.get(False)
-        except Queue.Empty:
-            pass
-
+            q.put(ppts.LeapData(pitch, vol))
 
 
 q = Queue.Queue()
@@ -83,12 +68,12 @@ def main():
 
 
 
-    t = threading.Thread(target = work)
+    # start thread
+    t = threading.Thread(target=ppts.play_sound, args=(q,))
+    # daemon won't stop program from exiting when it's the only thread left
     t.daemon = True
     t.start()
 
-    for i in range(10):
-        q.put(i)
 
 
     # Keep this process running until Enter is pressed
