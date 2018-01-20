@@ -1,4 +1,6 @@
-import Leap, sys, thread, time
+import sys, thread, time
+import Leap
+
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
 
@@ -21,10 +23,9 @@ class SampleListener(Leap.Listener):
         # Get the most recent frame and report some basic information
         frame = controller.frame()
 
-        if frame.hands.is_empty:
-            print
-        else:
-            print frame.hands[0].palm_position
+        # If there's a hand write out formatted palm positions to screen.
+        if not frame.hands.is_empty:
+            print frame.hands[0].palm_position.replace(',','')[1:-1]
 
 def main():
     # Create a sample listener and controller
