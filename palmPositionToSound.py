@@ -62,8 +62,8 @@ def play_sound(q):
         i += 1
         l = int(vol * 32767.0 * math.cos(pitch * math.pi * float(i) / float(sampleRate)))
         r = int(vol * 32767.0 * math.cos(pitch * math.pi * float(i) / float(sampleRate)))
-        data = struct.pack('<hh', l, r)
-        stream.write(data)
+        audio_data = struct.pack('<hh', l, r)
+        stream.write(audio_data)
 
     # TODO - make this actually happen at some point..
     # shut down pyaudio
