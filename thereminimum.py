@@ -20,6 +20,13 @@ import Leap
 from Leap import CircleGesture, KeyTapGesture, ScreenTapGesture, SwipeGesture
 
 
+
+import threading
+import Queue
+
+
+
+
 class SampleListener(Leap.Listener):
 
     def on_init(self, controller):
@@ -55,6 +62,17 @@ class SampleListener(Leap.Listener):
                 vol
                 )
 
+def work():
+    while True:
+        try:
+            print q.get(False)
+        except Queue.Empty:
+            pass
+
+
+
+q = Queue.Queue()
+
 def main():
     # Create a sample listener and controller
     listener = SampleListener()
@@ -62,6 +80,16 @@ def main():
 
     # Have the sample listener receive events from the controller
     controller.add_listener(listener)
+
+
+
+    t = threading.Thread(target = work)
+    t.daemon = True
+    t.start()
+
+    for i in range(10):
+        q.put(i)
+
 
     # Keep this process running until Enter is pressed
     print "Press Enter to quit..."
