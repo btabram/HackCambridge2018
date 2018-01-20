@@ -53,9 +53,16 @@ void SampleListener::onFrame(const Controller& controller) {
             << ", gestures: " << frame.gestures().count() << std::endl;
   */
   HandList hands = frame.hands();
+  Hand hand = hands[0];
+  const double pitch = 5.*hand.palmPosition()[1];
+  const double roll = (hand.isLeft())? hand.palmNormal().roll() *RAD_TO_DEG : -1.*hand.palmNormal().roll() *RAD_TO_DEG;
+  
+  double vol = (roll + 90)/180;
+  vol = ( vol > 1) ? 1 : vol ;
+  vol = ( vol < 0) ? 0 : vol ;
 
   if (!frame.hands().isEmpty()){
-    std::cout << hands[0].palmPosition() << std::endl;
+    std::cout << "(" << pitch << ", " << vol << ")" << std::endl;
   }
 
 }

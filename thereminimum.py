@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys, thread, time, os
 
 if sys.platform == 'linux2':
@@ -39,7 +40,7 @@ class SampleListener(Leap.Listener):
                 vol = 0
 
             # Calculate the hand's pitch, roll, and yaw angles
-            print "%f\t%f" % (
+            print "(%f, %f)" % (
                 frame.hands[0].palm_position[1],
                 vol
                 )

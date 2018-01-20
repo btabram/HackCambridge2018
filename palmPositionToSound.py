@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """palmPositionToSound.py
 
 Written on 20/01 by Will Grant, Tomé Gouveia and Brett Abram
@@ -35,20 +36,21 @@ stream = p.open(
 
 i = 0
 
-x, y, z = 0, 0, 0
+x, y  = 0, 0
 while True:
     if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
         line = sys.stdin.readline()
         palmPosition = line.strip().strip("()")
         try:
-            x, y, z = [5 * float(x) for x in palmPosition.split(",")]
-            print(x, y, z)
+            x, y  = [float(k) for k in palmPosition.split(",")]
+            print(x, y )
 
         except ValueError:
             continue
     i += 1
-    l = int(32767.0 * math.cos(y * math.pi * float(i) / float(sampleRate)))
-    r = int(32767.0 * math.cos(y * math.pi * float(i) / float(sampleRate)))
+    print(x, y )
+    l = int(32767.0*y * math.cos(x * math.pi * float(i) / float(sampleRate)))
+    r = int(32767.0*y * math.cos(x * math.pi * float(i) / float(sampleRate)))
     data = struct.pack('<hh', l, r)
     stream.write(data)
 
