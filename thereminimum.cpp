@@ -56,7 +56,7 @@ void SampleListener::onFrame(const Controller& controller) {
   for (HandList::const_iterator hl = hands.begin(); hl != hands.end(); ++hl) {
     // Get the first hand
     const Hand hand = *hl;
-    std::cout << std::string(2, ' ') << hand.palmPosition().x() << std::endl;
+    std::cout << std::string(2, ' ') << hand.palmPosition() << std::endl;
   }
 
   if (!frame.hands().isEmpty()) {
