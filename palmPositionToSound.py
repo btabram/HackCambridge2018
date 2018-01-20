@@ -1,31 +1,35 @@
+"""palmPositionToSound.py
 
-"""PyAudio Example: Play a wave file."""
+Written on 20/01 by Will Grant, Tomé Gouveia and Brett Abram
+
+Takes stdin giving the palm position from the Leap Motion
+Input form:
+(x, y, z)
+
+Outputs a sine wave with frequency proportional to the y position.
+
+Currently the difference between the input polling rate and sample rate
+results in lag: currently trying to fix.
+"""
 
 import pyaudio
-import sys
+import struct
+import math
 
-import wave, struct, math
-
-duration = 1.0       # seconds
-frequency = 1040.0    # hertz
+frequency = 1040.0  # hertz
 rFreq = 760.00  # A
-lFreq =  523.25  # C
+lFreq = 523.25  # C
 
-
-
-sampleRate = 2000 # hertz
+sampleRate = 2000  # hertz
 print(sampleRate)
-# instantiate PyAudio (1)
 p = pyaudio.PyAudio()
 
 # open stream (2)
-stream = p.open(format=p.get_format_from_width(2),
-                channels=2,
-                rate=sampleRate,
-                output=True)
-
-# read data
-# data = wf.readframes(CHUNK)
+stream = p.open(
+    format=p.get_format_from_width(2),
+    channels=2,
+    rate=sampleRate,
+    output=True)
 
 i = 0
 while True:
@@ -37,28 +41,20 @@ while True:
         continue
     palmPosition = palmPosition.strip("()")
     try:
-        x, y, z = [5* float(x) for x in palmPosition.split(",")]
+        x, y, z = [5 * float(x) for x in palmPosition.split(",")]
         for j in range(35):
-            i+= 1
-            l = int(32767.0*math.cos(y*math.pi*float(i)/float(sampleRate)))
-            r = int(32767.0*math.cos(y*math.pi*float(i)/float(sampleRate)))
-            data = struct.pack('<hh', l, r )
+            i += 1
+            l = int(
+                32767.0 * math.cos(y * math.pi * float(i) / float(sampleRate)))
+            r = int(
+                32767.0 * math.cos(y * math.pi * float(i) / float(sampleRate)))
+            data = struct.pack('<hh', l, r)
             stream.write(data)
     except ValueError:
         continue
-    print(x,y,z)
+    print(x, y, z)
 
-# for i in range(int(duration * sampleRate)):
-    # l = int(32767.0*math.cos(lFreq*math.pi*float(i)/float(sampleRate)))
-    # r = int(32767.0*math.cos(rFreq*math.pi*float(i)/float(sampleRate)))
-    # l = int(32767.0*math.cos(x *math.pi*float(i)/float(sampleRate)))
-    # r = int(32767.0*math.cos(y *math.pi*float(i)/float(sampleRate)))
-    # data = struct.pack('<hh', l, r )
-    # stream.write(data)
-
-# stop stream (4)
 stream.stop_stream()
 stream.close()
 
-# close PyAudio (5)
 p.terminate()
