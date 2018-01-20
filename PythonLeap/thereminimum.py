@@ -25,7 +25,7 @@ class SampleListener(Leap.Listener):
 
         # If there's a hand write out formatted palm positions to screen.
         if not frame.hands.is_empty:
-            print frame.hands[0].palm_position.replace(',','')[1:-1]
+            print frame.hands[0].palm_position #.replace(',','')[1:-1]
 
 def main():
     # Create a sample listener and controller
