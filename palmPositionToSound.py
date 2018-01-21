@@ -37,8 +37,11 @@ def play_sound(q):
         channels=2,
         rate=sampleRate,
         output=True)
-
+    import wave
+    wf = wave.open("DT_Clap.wav", 'rb')
+    CHUNK = 1024
     i = 0
+    counter = 0
     pitch, vol = 0, 0
     while True:
         try:
@@ -46,15 +49,22 @@ def play_sound(q):
             data = q.get(False)
             pitch = data.pitch
             vol = data.vol
-            try:
-                print(pitch, vol)
+            # print(pitch, vol, counter)
+            if vol > 0.99 and counter > 20000:
+                counter = 0
+                clap = wf.readframes(CHUNK)
+                while clap != '':
+                    i += 1
+                    stream.write(clap)
+                    clap = wf.readframes(CHUNK)
+            
+                wf = wave.open("DT_Clap.wav", 'rb')
 
-            except ValueError:
-                continue
         except Queue.Empty:
             pass
 
         i += 1
+        counter += 1
         l = int(vol * 32767.0 * math.cos(pitch * float(i) / float(sampleRate)))
         r = int(vol * 32767.0 * math.cos(pitch * float(i) / float(sampleRate)))
         audio_data = struct.pack('<hh', l, r)
