@@ -56,6 +56,9 @@ def play_sound(q):
             pitch2 = data.pitch2
             vol2 = data.vol2
             # print(pitch, vol, counter)
+            # round to int
+            pitch1 = int(pitch1) - int(pitch1) % 50
+            pitch2 = int(pitch2) - int(pitch2) % 50 
             if vol1 > 0.99 and counter > 20000:
                 counter = 0
                 clap = wf.readframes(CHUNK)
@@ -74,7 +77,7 @@ def play_sound(q):
         t = float(i) / float(sampleRate)
         VOL1 = vol1 * VOL
         VOL2 = vol2 * VOL
-        print pitch1/(2.*math.pi), pitch2/(2.*math.pi)
+        # print pitch1/(2.*math.pi), pitch2/(2.*math.pi)
         l = int(
             VOL1 * math.cos(pitch1 * t)/2 + VOL2 * math.cos(pitch2 * t)/2)
         r = int(
