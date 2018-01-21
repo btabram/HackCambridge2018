@@ -53,7 +53,7 @@ class SampleListener(Leap.Listener):
                 if vol < 0:
                     vol = 0
 
-                pitch = 40 + 6.5 * (hand.stabilised_palm_position[1]- 40)
+                pitch = 40 + 6.5 * (hand.palm_position[1]- 40)
 
                 #print pitch, vol
                 q.put(ppts.LeapData(pitch, vol))
@@ -82,8 +82,8 @@ class SampleListener(Leap.Listener):
                 if volR < 0:
                     volR = 0
 
-                pitchL = 40 + 6.5 * (handL.stabilised_palm_position[1]- 40)
-                pitchR = 40 + 6.5 * (handR.stabilised_palm_position[1]- 40)
+                pitchL = 40 + 6.5 * (handL.palm_position[1]- 40)
+                pitchR = 40 + 6.5 * (handR.palm_position[1]- 40)
 
                 q.put(ppts.LeapData(pitchL, volL, pitchR, volR))
 
