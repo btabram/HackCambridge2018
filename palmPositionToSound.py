@@ -66,6 +66,8 @@ def play_sound(bool_q,io_q):
                 vol1 = data.vol1
                 pitch2 = data.pitch2
                 vol2 = data.vol2
+                pitch1 = int(pitch1) - int(pitch1) % 50
+                pitch2 = int(pitch2) - int(pitch2) % 50
                 # print(pitch, vol, counter)
                 if vol1 > 0.99 and counter > 20000:
                     counter = 0
