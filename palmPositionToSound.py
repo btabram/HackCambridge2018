@@ -29,7 +29,7 @@ class LeapData:
 
 def play_sound(bool_q,io_q):
 
-    bool muted = False
+    muted = False
 
     sampleRate = 10000  # hertz
     print(sampleRate)

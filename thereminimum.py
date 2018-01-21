@@ -38,9 +38,11 @@ class SampleListener(Leap.Listener):
 
     def on_frame(self, controller):
         # Get the most recent frame and report some basic information
+        global muted
         frame = controller.frame()
         hands = frame.hands
         # If there's a hand write out formatted palm positions to screen.
+
 
         if hands.is_empty:
             if not muted:
@@ -50,6 +52,7 @@ class SampleListener(Leap.Listener):
         else:
             if muted:
                 muted = False
+                bool_q.put(muted)
 
             if (len(hands) == 1):
                 hand=hands[0]
@@ -100,7 +103,7 @@ class SampleListener(Leap.Listener):
 io_q = Queue.Queue()
 bool_q = Queue.Queue()
 
-bool muted = false;
+muted = False;
 
 
 def main():
