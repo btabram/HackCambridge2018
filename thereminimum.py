@@ -43,9 +43,14 @@ class SampleListener(Leap.Listener):
         # If there's a hand write out formatted palm positions to screen.
 
         if hands.is_empty:
-            # if there aren't any hands then don't make sound
-            q.put(0,0)
+            if not muted:
+                # if there aren't any hands then don't make sound
+                muted = True
+                bool_q.put(muted)
         else:
+            if muted:
+                muted = False
+
             if (len(hands) == 1):
                 hand=hands[0]
                 # Get the hand's normal vector and direction
@@ -58,7 +63,7 @@ class SampleListener(Leap.Listener):
 
                 pitch = 40 + 6.5 * (hand.palm_position[1]- 40)
 
-                q.put(ppts.LeapData(pitch, vol))
+                io_q.put(ppts.LeapData(pitch, vol))
                 #print pitch, vol
 
             # for two or more hands we just use the first two hands in the list
@@ -87,12 +92,15 @@ class SampleListener(Leap.Listener):
                 pitchL = 40 + 6.5 * (handL.palm_position[1]- 40)
                 pitchR = 40 + 6.5 * (handR.palm_position[1]- 40)
 
-                q.put(ppts.LeapData(pitchL, volL, pitchR, volR))
+                io_q.put(ppts.LeapData(pitchL, volL, pitchR, volR))
                 #print pitchL, volL, pitchR, volR
 
 
-# queue for passing messages between threads
-q = Queue.Queue()
+# queues for passing messages between threads
+io_q = Queue.Queue()
+bool_q = Queue.Queue()
+
+bool muted = false;
 
 
 def main():
@@ -101,7 +109,7 @@ def main():
     controller = Leap.Controller()
 
     # start thread
-    t = threading.Thread(target=ppts.play_sound, args=(q, ))
+    t = threading.Thread(target=ppts.play_sound, args=(bool_q,io_q,))
     # daemon won't stop program from exiting when it's the only thread left
     t.daemon = True
     t.start()

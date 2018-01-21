@@ -27,7 +27,9 @@ class LeapData:
         self.vol2 = vol2
 
 
-def play_sound(q):
+def play_sound(bool_q,io_q):
+
+    bool muted = False
 
     sampleRate = 10000  # hertz
     print(sampleRate)
@@ -46,38 +48,47 @@ def play_sound(q):
     counter = 0
     pitch1, vol1, pitch2, vol2 = 0, 0, 0, 0
     while True:
+
+        # see if a new item has been posted on the bool queue to tell us if we shouldstop playing sound or not
         try:
-            # False means this get() is non-blocking
-            data = q.get(
-                False)  # Current an object with pitch and vol member data
-            pitch1 = data.pitch1
-            vol1 = data.vol1
-            pitch2 = data.pitch2
-            vol2 = data.vol2
-            # print(pitch, vol, counter)
-            if vol1 > 0.99 and counter > 20000:
-                counter = 0
-                clap = wf.readframes(CHUNK)
-                while clap != '':
-                    i += 1
-                    stream.write(clap)
-                    clap = wf.readframes(CHUNK)
-
-                wf = wave.open("DT_Clap.wav", 'rb')
-
+            b = bool_q.get(False)
+            muted = b
         except Queue.Empty:
             pass
 
-        i += 1
-        counter += 1
-        l = int(
-            vol1 * 32767.0 * math.cos(pitch1 * float(i) / float(sampleRate))/2 +
-            vol2 * 32767.0 * math.cos(pitch2 * float(i) / float(sampleRate))/2)
-        r = int(
-            vol1 * 32767.0 * math.cos(pitch1 * float(i) / float(sampleRate))/2 +
-            vol2 * 32767.0 * math.cos(pitch2 * float(i) / float(sampleRate))/2)
-        audio_data = struct.pack('<hh', l, r)
-        stream.write(audio_data)
+        if not muted:
+            try:
+                # False means this get() is non-blocking
+                data = io_q.get(
+                    False)  # Current an object with pitch and vol member data
+                pitch1 = data.pitch1
+                vol1 = data.vol1
+                pitch2 = data.pitch2
+                vol2 = data.vol2
+                # print(pitch, vol, counter)
+                if vol1 > 0.99 and counter > 20000:
+                    counter = 0
+                    clap = wf.readframes(CHUNK)
+                    while clap != '':
+                        i += 1
+                        stream.write(clap)
+                        clap = wf.readframes(CHUNK)
+
+                    wf = wave.open("DT_Clap.wav", 'rb')
+
+            except Queue.Empty:
+                pass
+
+            i += 1
+            counter += 1
+            l = int(
+                vol1 * 32767.0 * math.cos(pitch1 * float(i) / float(sampleRate))/2 +
+                vol2 * 32767.0 * math.cos(pitch2 * float(i) / float(sampleRate))/2)
+            r = int(
+                vol1 * 32767.0 * math.cos(pitch1 * float(i) / float(sampleRate))/2 +
+                vol2 * 32767.0 * math.cos(pitch2 * float(i) / float(sampleRate))/2)
+            audio_data = struct.pack('<hh', l, r)
+            stream.write(audio_data)
 
     # TODO - make this actually happen at some point..
     # shut down pyaudio
