@@ -44,7 +44,7 @@ class SampleListener(Leap.Listener):
 
         if hands.is_empty:
             # if there aren't any hands then don't make sound
-            q.put(0,0)
+            q.put(ppts.LeapData(0,0))
         else:
             if (len(hands) == 1):
                 hand=hands[0]
