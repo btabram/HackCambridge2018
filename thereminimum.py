@@ -38,11 +38,25 @@ class SampleListener(Leap.Listener):
 
     def on_frame(self, controller):
         # Get the most recent frame and report some basic information
+        global empty_count, muted
         frame = controller.frame()
         hands = frame.hands
         # If there's a hand write out formatted palm positions to screen.
 
-        if not hands.is_empty:
+
+        if hands.is_empty:
+            if not muted:
+                empty_count += 1
+                # if there haven't been any hands for a while then don't make sound
+                if empty_count > 50:
+                    muted = True
+                    bool_q.put(muted)
+                    empty_count = 0
+        else:
+            if muted:
+                muted = False
+                bool_q.put(muted)
+
             if (len(hands) == 1):
                 hand=hands[0]
                 # Get the hand's normal vector and direction
@@ -55,22 +69,25 @@ class SampleListener(Leap.Listener):
 
                 pitch = 440 + 15.6*max(hand.palm_position[1]-10,0) 
 
+                io_q.put(ppts.LeapData(pitch, vol))
                 #print pitch, vol
-                q.put(ppts.LeapData(pitch, vol))
 
-            if (len(hands) == 2):
+            # for two or more hands we just use the first two hands in the list
+            else:
                 handL, handR = hands[0],hands[1]
 
-                if (hands[0].is_right and hands[1].is_left):
-                    handL, handR=hands[1], hands[0]
+                # We donn't do anything different for left or right hands at the
+                # moment so no point in this bit of code.
+                # if (hands[0].is_right and hands[1].is_left):
+                #     handL, handR=hands[1], hands[0]
 
-                yawL = handL.palm_normal.roll 
+                yawL = handL.palm_normal.roll
                 volL = (yawL * Leap.RAD_TO_DEG +90 )/180
                 if volL > 1:
                     volL = 1
                 if volL < 0:
                     volL = 0
-                
+
                 yawR = -1.*handR.palm_normal.roll
                 volR = (yawR * Leap.RAD_TO_DEG +90 )/180
                 if volR > 1:
@@ -81,12 +98,16 @@ class SampleListener(Leap.Listener):
                 pitchL = 440 + 15.6 * max(handL.palm_position[1] - 10, 0)
                 pitchR = 440 + 15.6 * max(handR.palm_position[1] - 10, 0)
 
-                q.put(ppts.LeapData(pitchL, volL, pitchR, volR))
+                io_q.put(ppts.LeapData(pitchL, volL, pitchR, volR))
                 #print pitchL, volL, pitchR, volR
 
 
-# queue for passing messages between threads
-q = Queue.Queue()
+# queues for passing messages between threads
+io_q = Queue.Queue()
+bool_q = Queue.Queue()
+
+muted = False;
+empty_count = 0
 
 
 def main():
@@ -95,7 +116,7 @@ def main():
     controller = Leap.Controller()
 
     # start thread
-    t = threading.Thread(target=ppts.play_sound, args=(q, ))
+    t = threading.Thread(target=ppts.play_sound, args=(bool_q,io_q,))
     # daemon won't stop program from exiting when it's the only thread left
     t.daemon = True
     t.start()
