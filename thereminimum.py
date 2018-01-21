@@ -42,7 +42,10 @@ class SampleListener(Leap.Listener):
         hands = frame.hands
         # If there's a hand write out formatted palm positions to screen.
 
-        if not hands.is_empty:
+        if hands.is_empty:
+            # if there aren't any hands then don't make sound
+            q.put(0,0)
+        else:
             if (len(hands) == 1):
                 hand=hands[0]
                 # Get the hand's normal vector and direction
@@ -55,22 +58,25 @@ class SampleListener(Leap.Listener):
 
                 pitch = 40 + 6.5 * (hand.palm_position[1]- 40)
 
-                #print pitch, vol
                 q.put(ppts.LeapData(pitch, vol))
+                #print pitch, vol
 
-            if (len(hands) == 2):
+            # for two or more hands we just use the first two hands in the list
+            else:
                 handL, handR = hands[0],hands[1]
 
-                if (hands[0].is_right and hands[1].is_left):
-                    handL, handR=hands[1], hands[0]
+                # We donn't do anything different for left or right hands at the
+                # moment so no point in this bit of code.
+                # if (hands[0].is_right and hands[1].is_left):
+                #     handL, handR=hands[1], hands[0]
 
-                yawL = handL.palm_normal.roll 
+                yawL = handL.palm_normal.roll
                 volL = (yawL * Leap.RAD_TO_DEG +90 )/180
                 if volL > 1:
                     volL = 1
                 if volL < 0:
                     volL = 0
-                
+
                 yawR = -1.*handR.palm_normal.roll
                 volR = (yawR * Leap.RAD_TO_DEG +90 )/180
                 if volR > 1:
