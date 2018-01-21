@@ -23,3 +23,27 @@ Dependencies:
 - Requires pyaudio (which requires portaudio)
 - Uses select() to poll for command-line input, meaning this is Linux/MacOS only
 
+
+
+
+## What we got
+
+
+
+- Non-blocking IO taking hand position and roll, converts to pitch and volume
+- Plays a clap at max volume currently
+- Crackles due to fast frequency change
+
+
+
+
+
+## What we want
+
+
+
+
+
+- No crackle
+- Two hands, two notes
+- Better .wav sample playing on gesture

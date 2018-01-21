@@ -50,7 +50,7 @@ class SampleListener(Leap.Listener):
             if vol < 0:
                 vol = 0
 
-            pitch = 15 * frame.hands[0].stabilized_palm_position[1]
+            pitch = 15 * hand.stabilized_palm_position[1]
             # pitch = 15 * frame.hands[0].palm_position[1]
 
             q.put(ppts.LeapData(pitch, vol))
