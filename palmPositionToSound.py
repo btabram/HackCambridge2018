@@ -16,7 +16,6 @@ results in lag: currently trying to fix.
 import pyaudio
 import struct
 import math
-import sys
 import Queue
 
 
@@ -27,10 +26,6 @@ class LeapData:
 
 
 def play_sound(q):
-    # set up pyaudio
-    frequency = 1040.0  # hertz
-    rFreq = 760.00  # A
-    lFreq = 523.25  # C
 
     sampleRate = 10000  # hertz
     print(sampleRate)
@@ -48,7 +43,7 @@ def play_sound(q):
     while True:
         try:
             # False means this get() is non-blocking
-            data =  q.get(False)
+            data = q.get(False)
             pitch = data.pitch
             vol = data.vol
             try:
