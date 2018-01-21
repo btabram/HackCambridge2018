@@ -11,7 +11,7 @@ It writes out the palm position coordinates as:
 
 import sys, thread, time, os, pyaudio, threading, Queue
 
-if sys.platform == 'linux2':
+if sys.platform != 'darwin':
     sys.path.append('LeapSDK/lib/x64')
     import LeapPython
 sys.path.append('LeapSDK/lib')
