@@ -45,13 +45,13 @@ class SampleListener(Leap.Listener):
         if not frame.hands.is_empty:
             # Get the hand's normal vector and direction
             yaw = hand.palm_normal.roll if hand.is_left else -1.*hand.palm_normal.roll
-            vol = (yaw * Leap.RAD_TO_DEG +90 )/1.8
-            if vol > 100:
-                vol = 100
+            vol = (yaw * Leap.RAD_TO_DEG +90 )/180
+            if vol > 1:
+                vol = 1
             if vol < 0:
                 vol = 0
 
-            pitch = frame.hands[0].palm_position[1]
+            pitch = 15*frame.hands[0].palm_position[1]
 
             q.put(ppts.LeapData(pitch, vol))
 

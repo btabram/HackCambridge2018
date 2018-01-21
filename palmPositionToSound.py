@@ -60,8 +60,8 @@ def play_sound(q):
             pass
 
         i += 1
-        l = int(vol * 32767.0 * math.cos(pitch * math.pi * float(i) / float(sampleRate)))
-        r = int(vol * 32767.0 * math.cos(pitch * math.pi * float(i) / float(sampleRate)))
+        l = int(vol * 32767.0 * math.cos(pitch * float(i) / float(sampleRate)))
+        r = int(vol * 32767.0 * math.cos(pitch * float(i) / float(sampleRate)))
         audio_data = struct.pack('<hh', l, r)
         stream.write(audio_data)
 
