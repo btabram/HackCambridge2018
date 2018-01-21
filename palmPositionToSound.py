@@ -29,7 +29,8 @@ class LeapData:
 
 def play_sound(q):
 
-    sampleRate = 10000  # hertz
+    sampleRate = 9000  # hertz
+    VOL = 32767 # max volume
     print(sampleRate)
     p = pyaudio.PyAudio()
 
@@ -70,12 +71,14 @@ def play_sound(q):
 
         i += 1
         counter += 1
+        t = float(i) / float(sampleRate)
+        VOL1 = vol1 * VOL
+        VOL2 = vol2 * VOL
+        print pitch1/(2.*math.pi), pitch2/(2.*math.pi)
         l = int(
-            vol1 * 32767.0 * math.cos(pitch1 * float(i) / float(sampleRate))/2 +
-            vol2 * 32767.0 * math.cos(pitch2 * float(i) / float(sampleRate))/2)
+            VOL1 * math.cos(pitch1 * t)/2 + VOL2 * math.cos(pitch2 * t)/2)
         r = int(
-            vol1 * 32767.0 * math.cos(pitch1 * float(i) / float(sampleRate))/2 +
-            vol2 * 32767.0 * math.cos(pitch2 * float(i) / float(sampleRate))/2)
+            VOL1 * math.cos(pitch1 * t)/2 + VOL2 * math.cos(pitch2 * t)/2)
         audio_data = struct.pack('<hh', l, r)
         stream.write(audio_data)
 
