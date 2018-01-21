@@ -47,8 +47,8 @@ class SampleListener(Leap.Listener):
         if hands.is_empty:
             if not muted:
                 empty_count += 1
-                if empty_count > 10000:
-                    # if there aren't any hands then don't make sound
+                # if there haven't been any hands for a while then don't make sound
+                if empty_count > 50:
                     muted = True
                     bool_q.put(muted)
                     empty_count = 0
