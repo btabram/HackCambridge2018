@@ -23,7 +23,6 @@ import palmPositionToSound as ppts
 
 
 class SampleListener(Leap.Listener):
-
     def on_init(self, controller):
         print "Initialized"
 
@@ -42,8 +41,10 @@ class SampleListener(Leap.Listener):
         frame = controller.frame()
         hands = frame.hands
         # If there's a hand write out formatted palm positions to screen.
+
         if not hands.is_empty:
             if (len(hands) == 1):
+                hand=hands[0]
                 # Get the hand's normal vector and direction
                 yaw = hand.palm_normal.roll if hand.is_left else -1.*hand.palm_normal.roll
                 vol = (yaw * Leap.RAD_TO_DEG +90 )/180
@@ -52,7 +53,7 @@ class SampleListener(Leap.Listener):
                 if vol < 0:
                     vol = 0
 
-                pitch = 40 + 6.5 * (frame.hands[0].palm_position[1]- 40)
+                pitch = 40 + 6.5 * (hand.stabilised_palm_position[1]- 40)
 
                 #print pitch, vol
                 q.put(ppts.LeapData(pitch, vol))
@@ -64,9 +65,7 @@ class SampleListener(Leap.Listener):
                     print "Both hands have the same sign. Abort."
                     sys.exit()
                 else:
-                    if (hands[0].is_left and hands[1].is_right):
-                        continue
-                    elif (hands[0].is_right and hands[1].is_left):
+                    if (hands[0].is_right and hands[1].is_left):
                         handL, handR=hands[1], hands[0]
 
                 yawL = handL.palm_normal.roll 
@@ -83,31 +82,30 @@ class SampleListener(Leap.Listener):
                 if volR < 0:
                     volR = 0
 
-                pitchL = 40 + 6.5 * (handL.palm_position[1]- 40)
-                pitchR = 40 + 6.5 * (handR.palm_position[1]- 40)
+                pitchL = 40 + 6.5 * (handL.stabilised_palm_position[1]- 40)
+                pitchR = 40 + 6.5 * (handR.stabilised_palm_position[1]- 40)
 
                 q.put(ppts.LeapData(pitchL, volL, pitchR, volR))
 
 
+
 # queue for passing messages between threads
 q = Queue.Queue()
+
 
 def main():
     # Create a sample listener and controller
     listener = SampleListener()
     controller = Leap.Controller()
 
-
     # start thread
-    t = threading.Thread(target=ppts.play_sound, args=(q,))
+    t = threading.Thread(target=ppts.play_sound, args=(q, ))
     # daemon won't stop program from exiting when it's the only thread left
     t.daemon = True
     t.start()
 
-
     # Have the sample listener receive events from the controller
     controller.add_listener(listener)
-
 
     # Keep this process running until Enter is pressed
     print "Press Enter to quit..."
