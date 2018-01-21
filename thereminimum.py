@@ -23,7 +23,6 @@ import palmPositionToSound as ppts
 
 
 class SampleListener(Leap.Listener):
-
     def on_init(self, controller):
         print "Initialized"
 
@@ -44,14 +43,15 @@ class SampleListener(Leap.Listener):
         # If there's a hand write out formatted palm positions to screen.
         if not frame.hands.is_empty:
             # Get the hand's normal vector and direction
-            yaw = hand.palm_normal.roll if hand.is_left else -1.*hand.palm_normal.roll
-            vol = (yaw * Leap.RAD_TO_DEG +90 )/180
+            yaw = hand.palm_normal.roll if hand.is_left else -1. * hand.palm_normal.roll
+            vol = (yaw * Leap.RAD_TO_DEG + 90) / 180
             if vol > 1:
                 vol = 1
             if vol < 0:
                 vol = 0
 
-            pitch = 15*frame.hands[0].palm_position[1]
+            pitch = 15 * frame.hands[0].stabilized_palm_position[1]
+            # pitch = 15 * frame.hands[0].palm_position[1]
 
             q.put(ppts.LeapData(pitch, vol))
 
@@ -59,22 +59,20 @@ class SampleListener(Leap.Listener):
 # queue for passing messages between threads
 q = Queue.Queue()
 
+
 def main():
     # Create a sample listener and controller
     listener = SampleListener()
     controller = Leap.Controller()
 
-
     # start thread
-    t = threading.Thread(target=ppts.play_sound, args=(q,))
+    t = threading.Thread(target=ppts.play_sound, args=(q, ))
     # daemon won't stop program from exiting when it's the only thread left
     t.daemon = True
     t.start()
 
-
     # Have the sample listener receive events from the controller
     controller.add_listener(listener)
-
 
     # Keep this process running until Enter is pressed
     print "Press Enter to quit..."
