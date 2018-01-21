@@ -61,12 +61,8 @@ class SampleListener(Leap.Listener):
             if (len(hands) == 2):
                 handL, handR = hands[0],hands[1]
 
-                if ((hands[0].is_left and hands[1].is_left) or (hands[0].is_right and hands[1].is_right)):
-                    print "Both hands have the same sign. Abort."
-                    sys.exit()
-                else:
-                    if (hands[0].is_right and hands[1].is_left):
-                        handL, handR=hands[1], hands[0]
+                if (hands[0].is_right and hands[1].is_left):
+                    handL, handR=hands[1], hands[0]
 
                 yawL = handL.palm_normal.roll 
                 volL = (yawL * Leap.RAD_TO_DEG +90 )/180
