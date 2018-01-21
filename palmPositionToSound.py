@@ -20,11 +20,13 @@ import Queue
 
 
 class LeapData:
-    def __init__(self, pitch1, vol1, pitch2=0, vol2=0):
+    def __init__(self, pitch1, vol1, note1, pitch2=0, vol2=0, note2=0):
         self.pitch1 = pitch1
         self.vol1 = vol1
+        self.note1 = note1
         self.pitch2 = pitch2
         self.vol2 = vol2
+        self.note2 = note2
 
 
 def play_sound(bool_q,io_q):
@@ -66,6 +68,12 @@ def play_sound(bool_q,io_q):
                 vol1 = data.vol1
                 pitch2 = data.pitch2
                 vol2 = data.vol2
+                # note1 = data.note1
+                if data.note2:
+                    s = data.note1 + " " + data.note2
+                    print s
+                else:
+                    print data.note1 
                 pitch1 = int(pitch1) - int(pitch1) % 50
                 pitch2 = int(pitch2) - int(pitch2) % 50
                 # print(pitch, vol, counter)
