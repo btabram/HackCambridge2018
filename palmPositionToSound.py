@@ -44,7 +44,7 @@ def play_sound(q):
     CHUNK = 1024
     i = 0
     counter = 0
-    pitch1, vol1, pitch2, vol2 = 0, 0
+    pitch1, vol1, pitch2, vol2 = 0, 0, 0, 0 
     while True:
         try:
             # False means this get() is non-blocking
