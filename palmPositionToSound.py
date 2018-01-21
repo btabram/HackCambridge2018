@@ -69,7 +69,7 @@ def play_sound(bool_q,io_q):
                 pitch1 = int(pitch1) - int(pitch1) % 50
                 pitch2 = int(pitch2) - int(pitch2) % 50
                 # print(pitch, vol, counter)
-                if vol1 > 0.99 and counter > 20000:
+                if (vol1 > 0.99 or vol2 > 0.99) and counter > 20000:
                     counter = 0
                     clap = wf.readframes(CHUNK)
                     while clap != '':
