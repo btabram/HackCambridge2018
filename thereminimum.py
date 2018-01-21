@@ -86,7 +86,7 @@ class SampleListener(Leap.Listener):
                 pitchR = 40 + 6.5 * (handR.palm_position[1]- 40)
 
                 q.put(ppts.LeapData(pitchL, volL, pitchR, volR))
-
+                #print pitchL, volL, pitchR, volR
 
 
 # queue for passing messages between threads
