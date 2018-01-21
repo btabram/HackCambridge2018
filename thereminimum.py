@@ -40,20 +40,53 @@ class SampleListener(Leap.Listener):
     def on_frame(self, controller):
         # Get the most recent frame and report some basic information
         frame = controller.frame()
-        hand = frame.hands[0]
+        hands = frame.hands
         # If there's a hand write out formatted palm positions to screen.
-        if not frame.hands.is_empty:
-            # Get the hand's normal vector and direction
-            yaw = hand.palm_normal.roll if hand.is_left else -1.*hand.palm_normal.roll
-            vol = (yaw * Leap.RAD_TO_DEG +90 )/180
-            if vol > 1:
-                vol = 1
-            if vol < 0:
-                vol = 0
+        if not hands.is_empty:
+            if (len(hands) == 1):
+                # Get the hand's normal vector and direction
+                yaw = hand.palm_normal.roll if hand.is_left else -1.*hand.palm_normal.roll
+                vol = (yaw * Leap.RAD_TO_DEG +90 )/180
+                if vol > 1:
+                    vol = 1
+                if vol < 0:
+                    vol = 0
 
-            pitch = 15*frame.hands[0].palm_position[1]
+                pitch = 40 + 6.5 * (frame.hands[0].palm_position[1]- 40)
 
-            q.put(ppts.LeapData(pitch, vol))
+                #print pitch, vol
+                q.put(ppts.LeapData(pitch, vol))
+
+            if (len(hands) == 2):
+                handL, handR = hands[0],hands[1]
+
+                if ((hands[0].is_left and hands[1].is_left) or (hands[0].is_right and hands[1].is_right)):
+                    print "Both hands have the same sign. Abort."
+                    sys.exit()
+                else:
+                    if (hands[0].is_left and hands[1].is_right):
+                        continue
+                    elif (hands[0].is_right and hands[1].is_left):
+                        handL, handR=hands[1], hands[0]
+
+                yawL = handL.palm_normal.roll 
+                volL = (yawL * Leap.RAD_TO_DEG +90 )/180
+                if volL > 1:
+                    volL = 1
+                if volL < 0:
+                    volL = 0
+                
+                yawR = -1.*handR.palm_normal.roll
+                volR = (yawR * Leap.RAD_TO_DEG +90 )/180
+                if volR > 1:
+                    volR = 1
+                if volR < 0:
+                    volR = 0
+
+                pitchL = 40 + 6.5 * (handL.palm_position[1]- 40)
+                pitchR = 40 + 6.5 * (handR.palm_position[1]- 40)
+
+                q.put(ppts.LeapData(pitchL, volL, pitchR, volR))
 
 
 # queue for passing messages between threads
