@@ -17,7 +17,7 @@ import pyaudio
 import struct
 import math
 import Queue
-
+from collections import deque # need this for rolling pitch average
 
 class LeapData:
     def __init__(self, pitch1, vol1, pitch2=0, vol2=0):
@@ -44,17 +44,31 @@ def play_sound(q):
     CHUNK = 1024
     i = 0
     counter = 0
-    pitch1, vol1, pitch2, vol2 = 0, 0, 0, 0 
+    averageLength = 100
+    pitch1 = deque([0]*averageLength)
+    pitch2 = deque([0]*averageLength)
+    averagePitch1 = 0
+    averagePitch2 = 0
+    vol1, vol2 = 0, 0,
     while True:
         try:
             # False means this get() is non-blocking
             data = q.get(
-                False)  # Current an object with pitch and vol member data
-            pitch1 = data.pitch1
+                False)  # Currently an object with pitch and vol member data
+            newPitch1 = data.pitch1
             vol1 = data.vol1
-            pitch2 = data.pitch2
+            newPitch2 = data.pitch2
             vol2 = data.vol2
-            # print(pitch, vol, counter)
+            
+            # push the newpitch to the right and pop the oldest pitch from the left
+            pitch1.append(newPitch1)
+            pitch2.append(newPitch2)
+            pitch1.popleft()            
+            pitch2.popleft()            
+
+            averagePitch1 = sum(pitch1)/averageLength 
+            averagePitch2 = sum(pitch2)/averageLength
+            print(averagePitch1)
             if vol1 > 0.99 and counter > 20000:
                 counter = 0
                 clap = wf.readframes(CHUNK)
@@ -71,11 +85,11 @@ def play_sound(q):
         i += 1
         counter += 1
         l = int(
-            vol1 * 32767.0 * math.cos(pitch1 * float(i) / float(sampleRate))/2 +
-            vol2 * 32767.0 * math.cos(pitch2 * float(i) / float(sampleRate))/2)
+            vol1 * 32767.0 * math.cos(averagePitch1 * float(i) / float(sampleRate))/2 +
+            vol2 * 32767.0 * math.cos(averagePitch2 * float(i) / float(sampleRate))/2)
         r = int(
-            vol1 * 32767.0 * math.cos(pitch1 * float(i) / float(sampleRate))/2 +
-            vol2 * 32767.0 * math.cos(pitch2 * float(i) / float(sampleRate))/2)
+            vol1 * 32767.0 * math.cos(averagePitch1 * float(i) / float(sampleRate))/2 +
+            vol2 * 32767.0 * math.cos(averagePitch2 * float(i) / float(sampleRate))/2)
         audio_data = struct.pack('<hh', l, r)
         stream.write(audio_data)
 
